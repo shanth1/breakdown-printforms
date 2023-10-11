@@ -1,15 +1,11 @@
-import { memo, useLayoutEffect, useRef } from "react";
+import { memo } from "react";
 
-export const TableHeader = memo(({ setHeaderRef, setHeaderHeight }) => {
-    const ref = useRef();
-    useLayoutEffect(() => {
-        if (ref.current) {
-            setHeaderHeight(ref.current.offsetHeight);
-            setHeaderRef(ref);
-        }
-    });
+export const TableHeader = memo(() => {
     return (
-        <div ref={ref} style={{ height: "150px", border: "1px solid" }}>
+        <div
+            data-table-header="header"
+            style={{ height: "150px", border: "1px solid" }}
+        >
             Header table
         </div>
     );

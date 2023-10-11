@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { TableHeader } from "./TableHeader";
 import "./App.css";
 
@@ -7,32 +7,37 @@ function App({ rows }) {
 
     const pageRef = useRef(); // реф на корневой див с одномерным массивом строк
 
-    const [headerRef, setHeaderRef] = useState(null); // реф на хедер страницы
-    const [headerHeight, setHeaderHeight] = useState(0);
+    const [, setRerender] = useState(false);
 
+    useLayoutEffect(() => {
+        setRerender(true);
+    }, []);
+
+    let tableHeaderElement;
     let occupiedHeight = 0; //
     pageRef?.current?.childNodes.forEach((element) => {
+        const isTableHeader = element.attributes["data-table-header"];
+        if (isTableHeader) {
+            tableHeaderElement = element.cloneNode(true); //
+        }
         // проверка на переполнение страницы
         if (occupiedHeight + element.offsetHeight > listHeight) {
             occupiedHeight = 0;
             // Проверка на количество защищает от поломки при лишних рендерах (например, при React.StrictMode)
             if (element.childElementCount < 2) {
                 element.style.pageBreakBefore = "always"; // перенос элемента, который не влез
-                const tableHeader = headerRef.current.cloneNode(true);
-                element.insertBefore(tableHeader, element.lastChild);
-                occupiedHeight += headerHeight;
+                const tableHeaderCopy = tableHeaderElement.cloneNode(true);
+                element.insertBefore(tableHeaderCopy, element.lastChild);
+                occupiedHeight += tableHeaderCopy.offsetHeight;
             }
         }
-        occupiedHeight += element.offsetHeight; // всегда увеличиваем
+        occupiedHeight += element.offsetHeight;
     });
 
     return (
         <div ref={pageRef} className="App">
             <div style={{ height: "300px" }}>Header</div>
-            <TableHeader
-                setHeaderRef={setHeaderRef}
-                setHeaderHeight={setHeaderHeight}
-            />
+            <TableHeader />
             {rows.map((el, index) => (
                 // Вложенность необходима для вставки компонента заголовка таблицы
                 <div key={index}>
