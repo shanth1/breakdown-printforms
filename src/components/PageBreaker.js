@@ -7,12 +7,10 @@ const breakTable = (array, table, rows) => {
   rows.forEach((el) => {
     clonedTable.innerHTML += el.outerHTML;
   });
-
-  clonedTable.style.pageBreakAfter = 'always';
   array.push(clonedTable);
 };
 
-export const PageBreaker = ({ children }) => {
+export const PageBreaker = ({ children, header, footer }) => {
   const pageRef = useRef();
 
   const [rerender, setRerender] = useState(false);
@@ -21,57 +19,74 @@ export const PageBreaker = ({ children }) => {
     setRerender(true);
   }, []);
 
-  const listHeight = 297 / 0.266;
+  const listHeight = 1121;
   const breakElements = [];
-  let occupiedHeight = 0;
-  let isBreakTableFlag = false;
+  let headerElement;
+  let footerElement;
+  let occupiedHeight;
+  if (rerender) {
+    headerElement = pageRef.current.firstChild;
+    headerElement.style.pageBreakBefore = 'always';
+    footerElement = pageRef.current.lastChild;
+    breakElements.push(headerElement);
+    occupiedHeight = 0 + headerElement.offsetHeight;
+  }
   function dfs(array, element) {
     element.childNodes.forEach((el) => {
       if (el.attributes && el.attributes['data-block']) {
-        array.push(el);
-        if (occupiedHeight + el.offsetHeight > listHeight) {
-          occupiedHeight = 0;
-          el.style.pageBreakBefore = 'always';
+        if (
+          occupiedHeight + el.offsetHeight + footerElement.offsetHeight <=
+          listHeight
+        ) {
+          array.push(el);
+          occupiedHeight += el.offsetHeight;
+        } else {
+          array.push(footerElement);
+
+          array.push(headerElement);
+          occupiedHeight = 0 + headerElement.offsetHeight;
+          array.push(el);
+          occupiedHeight += el.offsetHeight;
         }
-        occupiedHeight += el.offsetHeight;
       } else if (el.attributes && el.attributes['data-table']) {
         if (
           occupiedHeight +
             el.childNodes[0].offsetHeight +
-            el.childNodes[1].offsetHeight >
+            el.childNodes[1].offsetHeight +
+            footerElement.offsetHeight >
           listHeight
         ) {
-          occupiedHeight = 0;
+          array.push(footer);
+          array.push(headerElement);
+          occupiedHeight = 0 + headerElement.offsetHeight;
           el.style.pageBreakBefore = 'always';
         }
 
         let tableElements = [];
-
-        const tableHeader = el.firstChild.cloneNode(true);
+        const tableHeader = el.firstChild;
 
         for (let index = 0; index < el.childNodes.length; index++) {
           const row = el.childNodes[index];
-          if (occupiedHeight + row.offsetHeight > listHeight) {
-            isBreakTableFlag = true;
-            breakTable(breakElements, el, tableElements);
-            occupiedHeight = 0;
-            tableElements = [];
-          } else {
-            isBreakTableFlag = false;
+          if (
+            occupiedHeight + row.offsetHeight + footerElement.offsetHeight <=
+            listHeight
+          ) {
+            tableElements.push(row);
             occupiedHeight += row.offsetHeight;
-            tableElements.push(row);
-          }
-          if (isBreakTableFlag) {
-            occupiedHeight += tableHeader.offsetHeight;
+          } else {
+            breakTable(array, el, tableElements);
+            array.push(footerElement);
+
+            array.push(headerElement);
+            occupiedHeight = 0 + headerElement.offsetHeight;
+            tableElements = [];
             tableElements.push(tableHeader);
+            occupiedHeight += tableHeader.offsetHeight;
             tableElements.push(row);
+            occupiedHeight += row.offsetHeight;
           }
         }
-        el.innerHTML = '';
-        tableElements.forEach((row) => {
-          el.innerHTML += row.outerHTML;
-        });
-        breakElements.push(el);
+        breakTable(array, el, tableElements);
       } else {
         dfs(array, el);
       }
@@ -87,5 +102,11 @@ export const PageBreaker = ({ children }) => {
     });
   }
 
-  return <div ref={pageRef}>{children}</div>;
+  return (
+    <div ref={pageRef}>
+      {header}
+      {children}
+      {footer}
+    </div>
+  );
 };

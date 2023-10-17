@@ -4,13 +4,21 @@ import { TableHeader } from './TableHeader';
 export const Content = () => {
   return (
     <div>
-      <div
+      {/* <div
         data-block
         style={{ height: `${297 / 0.265}px`, backgroundColor: 'red' }}
-      ></div>
+      ></div> */}
       <div data-block className="heading">
         Таблица 1
       </div>
+      {/* <div
+        data-block
+        style={{ height: `${300}px`, backgroundColor: 'red' }}
+      ></div>
+      <div
+        data-block
+        style={{ height: `${700}px`, backgroundColor: 'green' }}
+      ></div> */}
       <div data-table className="table">
         <TableHeader
           columns={['Номер', 'Артикул', 'Продукт', 'Описание', 'Цена']}
