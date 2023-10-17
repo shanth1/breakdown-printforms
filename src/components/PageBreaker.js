@@ -57,7 +57,9 @@ export const PageBreaker = ({ children, header, footer }) => {
           array.at(-1).innerHTML += el.outerHTML;
           occupiedHeight += el.offsetHeight;
         } else {
-          array.push(container);
+          const containerCopy = container.cloneNode(true);
+          containerCopy.innerHTML = '';
+          array.push(containerCopy);
           const headerGag = document.createElement('div');
           headerGag.style.height = `${headerElement.offsetHeight}px`;
           array.at(-1).innerHTML += headerGag.outerHTML;
@@ -66,7 +68,6 @@ export const PageBreaker = ({ children, header, footer }) => {
           occupiedHeight += el.offsetHeight;
         }
       } else if (el.attributes && el.attributes['data-table']) {
-        // Частный случай
         if (
           occupiedHeight +
             el.childNodes[0].offsetHeight +
