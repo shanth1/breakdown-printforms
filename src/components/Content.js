@@ -46,7 +46,7 @@ export const Content = () => {
             <div className="row-element">{el.code}</div>
             <div className="row-element">{el.product}</div>
             <div className="row-element">{el.description}</div>
-            <div className="row-element">{el.price}</div>
+            <div className="row-element">{el.price} $</div>
           </div>
         ))}
       </div>

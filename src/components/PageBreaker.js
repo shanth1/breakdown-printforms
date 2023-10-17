@@ -7,7 +7,7 @@ const breakTable = (array, table, rows) => {
   rows.forEach((el) => {
     clonedTable.innerHTML += el.outerHTML;
   });
-  array.push(clonedTable);
+  array.at(-1).innerHTML += clonedTable.outerHTML;
 };
 
 export const PageBreaker = ({ children, header, footer }) => {
@@ -19,16 +19,32 @@ export const PageBreaker = ({ children, header, footer }) => {
     setRerender(true);
   }, []);
 
-  const listHeight = 1121;
-  const breakElements = [];
+  const listHeight = 1121.5;
+  const container = document.createElement('div');
+  container.style.position = 'relative';
+  container.style.height = `${listHeight}px`;
+  container.style.pageBreakAfter = 'always';
+  const breakElements = [container];
   let headerElement;
   let footerElement;
   let occupiedHeight;
   if (rerender) {
     headerElement = pageRef.current.firstChild;
-    headerElement.style.pageBreakBefore = 'always';
+    headerElement.style.position = 'absolute';
+    headerElement.style.width = '100vw';
+    headerElement.style.top = '0px';
+    headerElement.style.left = `${-headerElement.getBoundingClientRect()
+      .left}px`;
+
     footerElement = pageRef.current.lastChild;
-    breakElements.push(headerElement);
+    footerElement.style.position = 'absolute';
+    footerElement.style.width = '100vw';
+    footerElement.style.bottom = '0px';
+    footerElement.style.left = `${-footerElement.getBoundingClientRect()
+      .left}px`;
+    const headerGag = document.createElement('div');
+    headerGag.style.height = `${headerElement.offsetHeight}px`;
+    breakElements.at(-1).innerHTML += headerGag.outerHTML;
     occupiedHeight = 0 + headerElement.offsetHeight;
   }
   function dfs(array, element) {
@@ -38,17 +54,19 @@ export const PageBreaker = ({ children, header, footer }) => {
           occupiedHeight + el.offsetHeight + footerElement.offsetHeight <=
           listHeight
         ) {
-          array.push(el);
+          array.at(-1).innerHTML += el.outerHTML;
           occupiedHeight += el.offsetHeight;
         } else {
-          array.push(footerElement);
-
-          array.push(headerElement);
+          array.push(container);
+          const headerGag = document.createElement('div');
+          headerGag.style.height = `${headerElement.offsetHeight}px`;
+          array.at(-1).innerHTML += headerGag.outerHTML;
           occupiedHeight = 0 + headerElement.offsetHeight;
-          array.push(el);
+          array.at(-1).innerHTML += el.outerHTML;
           occupiedHeight += el.offsetHeight;
         }
       } else if (el.attributes && el.attributes['data-table']) {
+        // Частный случай
         if (
           occupiedHeight +
             el.childNodes[0].offsetHeight +
@@ -56,10 +74,12 @@ export const PageBreaker = ({ children, header, footer }) => {
             footerElement.offsetHeight >
           listHeight
         ) {
-          array.push(footer);
-          array.push(headerElement);
-          occupiedHeight = 0 + headerElement.offsetHeight;
-          el.style.pageBreakBefore = 'always';
+          const containerCopy = container.cloneNode(true);
+          containerCopy.innerHTML = '';
+          array.push(containerCopy);
+          const headerGag = document.createElement('div');
+          headerGag.style.height = `${headerElement.offsetHeight}px`;
+          array.at(-1).innerHTML += headerGag.outerHTML;
         }
 
         let tableElements = [];
@@ -75,9 +95,12 @@ export const PageBreaker = ({ children, header, footer }) => {
             occupiedHeight += row.offsetHeight;
           } else {
             breakTable(array, el, tableElements);
-            array.push(footerElement);
-
-            array.push(headerElement);
+            const containerCopy = container.cloneNode(true);
+            containerCopy.innerHTML = '';
+            array.push(containerCopy);
+            const headerGag = document.createElement('div');
+            headerGag.style.height = `${headerElement.offsetHeight}px`;
+            array.at(-1).innerHTML += headerGag.outerHTML;
             occupiedHeight = 0 + headerElement.offsetHeight;
             tableElements = [];
             tableElements.push(tableHeader);
@@ -97,8 +120,10 @@ export const PageBreaker = ({ children, header, footer }) => {
 
   if (pageRef.current) {
     pageRef.current.innerHTML = '';
-    breakElements.forEach((el) => {
-      pageRef.current.innerHTML += el.outerHTML;
+    breakElements.forEach((page) => {
+      page.innerHTML =
+        headerElement.outerHTML + page.innerHTML + footerElement.outerHTML;
+      pageRef.current.innerHTML += page.outerHTML;
     });
   }
 
