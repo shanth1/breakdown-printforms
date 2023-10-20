@@ -82,7 +82,6 @@ export const PageBreaker = ({ children, header, footer }) => {
           occupiedHeight += element.offsetHeight;
         }
       } else if (element.attributes && element.attributes['data-table']) {
-        debugger;
         if (
           occupiedHeight +
             element.childNodes[0].offsetHeight +
@@ -90,6 +89,7 @@ export const PageBreaker = ({ children, header, footer }) => {
             footerElement.offsetHeight >
           listHeight
         ) {
+          occupiedHeight = 0;
           pages.push(getNewContainer(container));
           pages.at(-1).innerHTML += headerOffset.outerHTML;
         }
@@ -99,7 +99,6 @@ export const PageBreaker = ({ children, header, footer }) => {
 
         for (let index = 0; index < element.childNodes.length; index++) {
           const row = element.childNodes[index];
-          debugger;
           if (
             occupiedHeight + row.offsetHeight + footerElement.offsetHeight <=
             listHeight
