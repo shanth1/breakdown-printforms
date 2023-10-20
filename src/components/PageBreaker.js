@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
-const listHeight = 1121.5;
+const listHeight = 1120;
 
 const getHeaderOffsetElement = (headerElement) => {
   const headerOffset = document.createElement('div');
@@ -10,7 +10,7 @@ const getHeaderOffsetElement = (headerElement) => {
 const setUpContainer = () => {
   const container = document.createElement('div');
   container.style.position = 'relative';
-  container.style.height = `${listHeight}px`;
+  container.style.height = `${listHeight + 1}px`;
   container.style.pageBreakAfter = 'always';
   return container;
 };
@@ -48,17 +48,22 @@ export const PageBreaker = ({ children, header, footer }) => {
   const container = setUpContainer();
   let headerOffset;
   const pages = [container];
-  let headerElement;
-  let footerElement;
-  let occupiedHeight;
+  let headerElement = document.createElement('div');
+  let footerElement = document.createElement('div');
+  let occupiedHeight = 0;
   if (rerender) {
-    headerElement = getPrepareElement(rootRef.current.firstChild);
-    headerElement.style.top = '0px';
-    footerElement = getPrepareElement(rootRef.current.lastChild);
-    footerElement.style.bottom = '0px';
+    if (header) {
+      headerElement = getPrepareElement(rootRef.current.firstChild);
+      headerElement.style.top = '0px';
+    }
+    if (footer) {
+      footerElement = getPrepareElement(rootRef.current.lastChild);
+      footerElement.style.bottom = '0px';
+    }
+
     headerOffset = getHeaderOffsetElement(headerElement);
     pages.at(-1).innerHTML += headerOffset.outerHTML;
-    occupiedHeight = 0 + headerElement.offsetHeight;
+    occupiedHeight += headerElement.offsetHeight;
   }
   function generatePagesFromGraph(graph, pages) {
     graph.childNodes.forEach((element) => {
@@ -77,6 +82,7 @@ export const PageBreaker = ({ children, header, footer }) => {
           occupiedHeight += element.offsetHeight;
         }
       } else if (element.attributes && element.attributes['data-table']) {
+        debugger;
         if (
           occupiedHeight +
             element.childNodes[0].offsetHeight +
@@ -93,6 +99,7 @@ export const PageBreaker = ({ children, header, footer }) => {
 
         for (let index = 0; index < element.childNodes.length; index++) {
           const row = element.childNodes[index];
+          debugger;
           if (
             occupiedHeight + row.offsetHeight + footerElement.offsetHeight <=
             listHeight
