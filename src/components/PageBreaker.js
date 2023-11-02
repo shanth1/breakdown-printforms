@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
-const listHeight = 1120;
+const listHeight = 1115;
 
 const getHeaderOffsetElement = (headerElement) => {
   const headerOffset = document.createElement('div');
@@ -10,7 +10,7 @@ const getHeaderOffsetElement = (headerElement) => {
 const setUpContainer = () => {
   const container = document.createElement('div');
   container.style.position = 'relative';
-  container.style.height = `${listHeight + 1}px`;
+  container.style.height = '1120px';
   container.style.pageBreakAfter = 'always';
   return container;
 };
@@ -92,6 +92,7 @@ export const PageBreaker = ({ children, header, footer }) => {
           occupiedHeight = 0;
           pages.push(getNewContainer(container));
           pages.at(-1).innerHTML += headerOffset.outerHTML;
+          occupiedHeight = 0 + headerElement.offsetHeight;
         }
 
         let tableElements = [];
