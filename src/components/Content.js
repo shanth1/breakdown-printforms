@@ -1,4 +1,5 @@
-import { table1, table2 } from '../model/data';
+import { params, table1, table2 } from '../model/data';
+import { ProductCard } from './ProductCard';
 import { TableHeader } from './TableHeader';
 
 export const Content = () => {
@@ -47,6 +48,8 @@ export const Content = () => {
             </div>
           ))}
         </div>
+        <ProductCard params={params} />
+        <ProductCard params={params} />
       </div>
     </div>
   );

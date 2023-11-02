@@ -1,3 +1,26 @@
+export const params = [
+  {
+    title: 'Title1',
+    rows: ['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8'],
+  },
+  {
+    title: 'Title2',
+    rows: ['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8'],
+  },
+  {
+    title: 'Title3',
+    rows: ['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8'],
+  },
+  {
+    title: 'Title4',
+    rows: ['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8'],
+  },
+  {
+    title: 'Title5',
+    rows: ['row1', 'row2', 'row3', 'row4', 'row5', 'row6', 'row7', 'row8'],
+  },
+];
+
 export const table1 = [
   {
     code: 'AKSJD28',

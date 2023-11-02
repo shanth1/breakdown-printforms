@@ -119,6 +119,86 @@ export const PageBreaker = ({ children, header, footer }) => {
           }
         }
         breakTable(pages, element, tableElements);
+      } else if (element.attributes && element.attributes['data-product']) {
+        const title = element.firstChild;
+
+        // Проверка тайтл
+        if (
+          occupiedHeight + title.offsetHeight + footerElement.offsetHeight <=
+          listHeight
+        ) {
+          pages.at(-1).innerHTML += title.outerHTML;
+          occupiedHeight += title.offsetHeight;
+        } else {
+          pages.push(getNewContainer(container));
+          pages.at(-1).innerHTML += headerOffset.outerHTML;
+          occupiedHeight = 0 + headerElement.offsetHeight;
+          pages.at(-1).innerHTML += title.outerHTML;
+          occupiedHeight += title.offsetHeight;
+        }
+
+        const body = element.lastChild;
+
+        const svg = body.firstChild;
+        const params = body.lastChild;
+
+        // Create BLOCK SVG
+        const blockWithSvgElement = body.cloneNode(true);
+        blockWithSvgElement.lastChild.innerHTML = '';
+        let blockWithSvgHeight = 0;
+        let index = 0;
+        for (; index < params.childNodes.length; index++) {
+          const row = params.childNodes[index];
+          if (svg.offsetHeight < blockWithSvgHeight) break;
+          blockWithSvgElement.lastChild.innerHTML += row.outerHTML;
+          blockWithSvgHeight += row.offsetHeight;
+        }
+
+        //Вставка Блока СВГ
+        if (
+          occupiedHeight + blockWithSvgHeight + footerElement.offsetHeight <=
+          listHeight
+        ) {
+          pages.at(-1).innerHTML += blockWithSvgElement.outerHTML;
+          occupiedHeight += blockWithSvgHeight;
+        } else {
+          pages.push(getNewContainer(container));
+          pages.at(-1).innerHTML += headerOffset.outerHTML;
+          occupiedHeight = 0 + headerElement.offsetHeight;
+          pages.at(-1).innerHTML += blockWithSvgElement.outerHTML;
+          occupiedHeight += blockWithSvgHeight;
+        }
+
+        if (index < params.childNodes.length) {
+          for (let j = index; j < params.childNodes.length; j++) {
+            const row = params.childNodes[j];
+            if (
+              occupiedHeight + row.offsetHeight + footerElement.offsetHeight <=
+              listHeight
+            ) {
+              const blockWithPseudoSvg = body.cloneNode(true);
+              const pseudoSvg = document.createElement('div');
+              pseudoSvg.style.width = svg.offsetWidth;
+              blockWithPseudoSvg.firstChild.outerHTML = pseudoSvg.outerHTML;
+              blockWithPseudoSvg.lastChild.innerHTML = '';
+              blockWithPseudoSvg.lastChild.innerHTML = row.outerHTML;
+              pages.at(-1).innerHTML += blockWithPseudoSvg.outerHTML;
+              occupiedHeight += row.offsetHeight;
+            } else {
+              pages.push(getNewContainer(container));
+              pages.at(-1).innerHTML += headerOffset.outerHTML;
+              occupiedHeight = 0 + headerElement.offsetHeight;
+              const blockWithPseudoSvg = body.cloneNode(true);
+              const pseudoSvg = document.createElement('div');
+              pseudoSvg.style.width = svg.offsetWidth;
+              blockWithPseudoSvg.firstChild.outerHTML = pseudoSvg.outerHTML;
+              blockWithPseudoSvg.lastChild.innerHTML = '';
+              blockWithPseudoSvg.lastChild.innerHTML = row.outerHTML;
+              pages.at(-1).innerHTML += blockWithPseudoSvg.outerHTML;
+              occupiedHeight += row.offsetHeight;
+            }
+          }
+        }
       } else {
         generatePagesFromGraph(element, pages);
       }

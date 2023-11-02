@@ -1,5 +1,5 @@
 .App {
-  padding: 0 150px;
+  padding: 0 20px;
 }
 
 .heading {
@@ -28,4 +28,29 @@
 
 .row-element {
   width: 100%;
+}
+
+.card__title {
+  height: 40px;
+  background-color: silver;
+}
+.card__body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.card__svg {
+  border: 1px solid black;
+  width: 100%;
+  height: 300px;
+}
+.card__params {
+  background-color: rgb(231, 231, 231);
+}
+.param__title {
+  background-color: slategray;
+  height: 35px;
+}
+.param__row {
+  height: 35px;
 }
