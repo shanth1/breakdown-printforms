@@ -122,21 +122,6 @@ export const PageBreaker = ({ children, header, footer }) => {
       } else if (element.attributes && element.attributes['data-product']) {
         const title = element.firstChild;
 
-        // Проверка тайтл
-        if (
-          occupiedHeight + title.offsetHeight + footerElement.offsetHeight <=
-          listHeight
-        ) {
-          pages.at(-1).innerHTML += title.outerHTML;
-          occupiedHeight += title.offsetHeight;
-        } else {
-          pages.push(getNewContainer(container));
-          pages.at(-1).innerHTML += headerOffset.outerHTML;
-          occupiedHeight = 0 + headerElement.offsetHeight;
-          pages.at(-1).innerHTML += title.outerHTML;
-          occupiedHeight += title.offsetHeight;
-        }
-
         const body = element.lastChild;
 
         const svg = body.firstChild;
@@ -154,17 +139,24 @@ export const PageBreaker = ({ children, header, footer }) => {
           blockWithSvgHeight += row.offsetHeight;
         }
 
-        //Вставка Блока СВГ
+        //Вставка Тайтл и Блок СВГ
         if (
-          occupiedHeight + blockWithSvgHeight + footerElement.offsetHeight <=
+          occupiedHeight +
+            title.offsetHeight +
+            blockWithSvgHeight +
+            footerElement.offsetHeight <=
           listHeight
         ) {
+          pages.at(-1).innerHTML += title.outerHTML;
+          occupiedHeight += title.offsetHeight;
           pages.at(-1).innerHTML += blockWithSvgElement.outerHTML;
           occupiedHeight += blockWithSvgHeight;
         } else {
           pages.push(getNewContainer(container));
           pages.at(-1).innerHTML += headerOffset.outerHTML;
           occupiedHeight = 0 + headerElement.offsetHeight;
+          pages.at(-1).innerHTML += title.outerHTML;
+          occupiedHeight += title.offsetHeight;
           pages.at(-1).innerHTML += blockWithSvgElement.outerHTML;
           occupiedHeight += blockWithSvgHeight;
         }
