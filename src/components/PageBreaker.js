@@ -120,10 +120,8 @@ export const PageBreaker = ({ children, header, footer }) => {
         }
         breakTable(pages, element, tableElements);
       } else if (element.attributes && element.attributes['data-product']) {
-        const title = element.firstChild;
-
+        const header = element.firstChild;
         const body = element.lastChild;
-
         const svg = body.firstChild;
         const params = body.lastChild;
 
@@ -142,21 +140,21 @@ export const PageBreaker = ({ children, header, footer }) => {
         //Вставка Тайтл и Блок СВГ
         if (
           occupiedHeight +
-            title.offsetHeight +
+            header.offsetHeight +
             blockWithSvgHeight +
             footerElement.offsetHeight <=
           listHeight
         ) {
-          pages.at(-1).innerHTML += title.outerHTML;
-          occupiedHeight += title.offsetHeight;
+          pages.at(-1).innerHTML += header.outerHTML;
+          occupiedHeight += header.offsetHeight;
           pages.at(-1).innerHTML += blockWithSvgElement.outerHTML;
           occupiedHeight += blockWithSvgHeight;
         } else {
           pages.push(getNewContainer(container));
           pages.at(-1).innerHTML += headerOffset.outerHTML;
           occupiedHeight = 0 + headerElement.offsetHeight;
-          pages.at(-1).innerHTML += title.outerHTML;
-          occupiedHeight += title.offsetHeight;
+          pages.at(-1).innerHTML += header.outerHTML;
+          occupiedHeight += header.offsetHeight;
           pages.at(-1).innerHTML += blockWithSvgElement.outerHTML;
           occupiedHeight += blockWithSvgHeight;
         }
