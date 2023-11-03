@@ -8,12 +8,12 @@ export const ProductCard = ({ params }) => {
         <div className="card__svg"></div>
         <div className="card__params">
           {params.map((param) => (
-            <>
+            <div>
               <div className="param__title">{param.title}</div>
               {param.rows.map((row) => (
                 <div className="param__row">{row}</div>
               ))}
-            </>
+            </div>
           ))}
         </div>
       </div>
